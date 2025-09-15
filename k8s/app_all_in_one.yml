@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: diploma-app
+spec:
+  selector:
+    app: diploma-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: diploma-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: diploma-app
+  template:
+    metadata:
+      labels:
+        app: diploma-app
+        version: "__TAG__" 
+    spec:
+      containers:
+        - name: diploma-app
+          image: shibegora/diploma_app:__TAG__
+          ports:
+            - containerPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: diplom-app-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /app
+            pathType: Prefix
+            backend:
+              service:
+                name: diplom-app
+                port:
+                  number: 80
