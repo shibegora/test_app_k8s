@@ -30,7 +30,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.IMAGE_NAME }}
+          tags: ${{ env.IMAGE_NAME }}:latest
 
       - name: Build and push image with tag
         uses: docker/build-push-action@v5
@@ -63,4 +63,4 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           TAG=${GITHUB_REF##*/}
-          sed "s|__TAG__|${TAG}|g" k8s_cfgs/app_all_in_one.yml | kubectl apply -f -
+          sed "s|__TAG__|${TAG}|g" k8s/app_all_in_one.yml | kubectl apply -f -
